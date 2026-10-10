@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { createPublicClient, createWalletClient, custom, http } from 'viem'
+import { createPublicClient, http } from 'viem'
+import { useAccount, useSwitchChain, useWriteContract } from 'wagmi'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { monad, GOV, govAbi } from './chain'
 
 const pc = createPublicClient({ chain: monad, transport: http(undefined, { batch: true }) })
-const eth = typeof window !== 'undefined' ? window.ethereum : undefined
-const wallet = () => createWalletClient({ chain: monad, transport: custom(eth) })
 const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`
 const read = (functionName, args = []) => pc.readContract({ address: GOV, abi: govAbi, functionName, args })
 const reason = (e) => (e?.shortMessage || e?.message || 'Something went wrong').split('reason:').pop().trim().split('\n')[0]
@@ -56,7 +56,10 @@ function Stream({ p, big }) {
 }
 
 export default function App() {
-  const [acct, setAcct] = useState(null)
+  const { address, chainId } = useAccount()
+  const acct = address ?? null
+  const { switchChainAsync } = useSwitchChain()
+  const { writeContractAsync } = useWriteContract()
   const [props, setProps] = useState(null)
   const [view, setView] = useState('list')
   const [busy, setBusy] = useState(false)
@@ -68,28 +71,14 @@ export default function App() {
   }, [acct])
 
   useEffect(() => { refresh(); const t = setInterval(refresh, 8000); return () => clearInterval(t) }, [refresh])
-  useEffect(() => {
-    if (!eth) return
-    eth.request({ method: 'eth_accounts' }).then(([a]) => a && setAcct(a))
-    const on = ([a]) => setAcct(a || null)
-    eth.on?.('accountsChanged', on)
-    return () => eth.removeListener?.('accountsChanged', on)
-  }, [])
-
-  async function ensureChain() {
-    try { await wallet().switchChain({ id: monad.id }) } catch { await wallet().addChain({ chain: monad }); await wallet().switchChain({ id: monad.id }) }
-  }
-  async function connect() {
-    if (!eth) return setNote({ kind: 'err', text: 'No wallet found. Install MetaMask or Rabby, then reload.' })
-    try { const [a] = await eth.request({ method: 'eth_requestAccounts' }); await ensureChain(); setAcct(a) } catch (e) { setNote({ kind: 'err', text: reason(e) }) }
-  }
+  async function ensureChain() { if (chainId !== monad.id) await switchChainAsync({ chainId: monad.id }) }
   async function act(label, functionName, args, done) {
     setBusy(true); setNote(null)
     try {
       await ensureChain()
       const req = { address: GOV, abi: govAbi, functionName, args, account: acct }
       await pc.simulateContract(req)
-      const hash = await wallet().writeContract(req)
+      const hash = await writeContractAsync({ address: GOV, abi: govAbi, functionName, args, chainId: monad.id })
       setNote({ kind: 'ok', text: `${label} sent. Confirming…`, hash })
       await pc.waitForTransactionReceipt({ hash })
       setNote({ kind: 'ok', text: `${label} confirmed.`, hash })
@@ -105,7 +94,7 @@ export default function App() {
   const current = typeof view === 'number' ? props?.find((p) => p.id === view) : null
 
   const left_ = (p) => (status(p) === 'Active' ? left(Number(p.endTime) - now) : status(p))
-  const pill = acct ? <span className="addr"><i />{short(acct)}</span> : <button className="connect" onClick={connect}>Connect wallet</button>
+  const pill = <ConnectButton showBalance={false} chainStatus="icon" accountStatus="address" label="Connect wallet" />
 
   return (
     <div className="site">

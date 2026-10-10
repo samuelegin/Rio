@@ -7,7 +7,7 @@ npm install
 npm run dev
 ```
 
-Needs a browser wallet (MetaMask or Rabby) with Monad Testnet MON. The contract address is in `src/chain.js`. Deploy to Vercel as a normal Vite app.
+Wallet connect and disconnect use RainbowKit. Browser wallets (MetaMask, Rabby) work out of the box. For WalletConnect and mobile wallets, copy `.env.example` to `.env` and set `VITE_WALLETCONNECT_PROJECT_ID` (free at cloud.reown.com). You need Monad Testnet MON. The contract address is in `src/chain.js`. Deploy to Vercel as a normal Vite app.
 
 ## Demo flow with Rhizome
 
