@@ -1,0 +1,81 @@
+:root {
+  --water:#1a35f0; --deep:#0f1fa8; --ink:#07104d; --foam:#f4f7ff;
+  --for:#6ff0c0; --against:#ff6b3d; --abstain:#c8cdfa;
+  --display:'Bricolage Grotesque',system-ui,sans-serif; --body:'Figtree',system-ui,sans-serif;
+}
+* { box-sizing:border-box }
+body { margin:0; background:var(--water); color:var(--foam); font:400 17px/1.55 var(--body); -webkit-font-smoothing:antialiased }
+button, input, textarea { font-family:inherit }
+button:focus-visible, input:focus-visible, textarea:focus-visible, .channel:focus-visible { outline:3px solid #fff; outline-offset:3px }
+.site { min-height:100vh; background:radial-gradient(90% 50% at 100% 0%, #3552ff 0%, transparent 60%) }
+
+header { display:flex; align-items:center; gap:28px; padding:22px clamp(18px,4vw,56px) }
+.mark { background:none; border:0; color:#fff; font:800 44px/1 var(--display); letter-spacing:-.05em; cursor:pointer; padding:0; margin-right:auto }
+nav { display:flex; gap:6px }
+nav button { background:none; border:0; color:#c9d2ff; font:600 16px var(--body); padding:9px 14px; border-radius:99px; cursor:pointer }
+nav button:hover { color:#fff } nav button.on { background:#fff; color:var(--water) }
+.connect { background:var(--for); color:var(--ink); border:0; border-radius:99px; padding:11px 20px; font:700 15px var(--body); cursor:pointer }
+.connect:hover { background:#92f5d2 }
+.addr { display:flex; align-items:center; gap:9px; border:2px solid #7f90ff; border-radius:99px; padding:8px 16px; font:600 15px var(--body) }
+.addr i { width:9px; height:9px; border-radius:50%; background:var(--for) }
+
+main { padding:clamp(24px,5vw,64px) clamp(18px,4vw,56px) 120px; max-width:1180px; margin:0 auto }
+.kicker { margin:0 0 14px; font:600 16px var(--body); color:#b7c3ff }
+.hero { font:800 clamp(48px,9vw,120px)/.92 var(--display); letter-spacing:-.05em; margin:0 0 clamp(36px,6vw,72px); max-width:11ch; text-wrap:balance }
+.hero.sm { font-size:clamp(36px,6.4vw,84px); max-width:16ch; margin-bottom:30px }
+
+.channels { display:grid; gap:clamp(40px,6vw,68px) }
+.channel { cursor:pointer; border-radius:6px }
+.ch-head { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:14px }
+.ch-head h2 { font:700 clamp(26px,3.6vw,44px)/1.05 var(--display); letter-spacing:-.035em; margin:0; max-width:22ch; text-wrap:balance }
+.channel:hover h2 { text-decoration:underline; text-decoration-thickness:3px; text-underline-offset:6px }
+.clock { text-align:right; white-space:nowrap; line-height:1 } .clock b { display:block; font:800 clamp(30px,4.4vw,56px)/1 var(--display); letter-spacing:-.04em }
+.clock small { font:600 14px var(--body); color:#b7c3ff } .clock.inline { display:flex; align-items:baseline; gap:8px } .clock.inline b { display:inline; font-size:34px }
+.Closed .clock b { color:#8e9cff }
+
+/* the stream */
+.stream { position:relative; height:84px; border-radius:14px; overflow:hidden; background:var(--deep) }
+.stream.big { height:clamp(200px,34vw,340px); border-radius:20px }
+.stream svg { position:absolute; inset:0; width:100%; height:100% }
+.flow { animation:drift 9s linear infinite } @keyframes drift { to { transform:translateY(-100px) } }
+.counts { position:absolute; inset:0; display:flex; pointer-events:none }
+.counts > div { min-width:0; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--ink); overflow:hidden }
+.counts strong { font:800 30px/1 var(--display); letter-spacing:-.04em } .counts span { font:700 14px var(--body) }
+.big .counts { flex-direction:row } .big .counts > div { flex-direction:column; gap:2px } .big .counts strong { font-size:clamp(48px,9vw,120px); letter-spacing:-.06em } .big .counts span { font-size:clamp(14px,1.8vw,20px) }
+.dry { position:absolute; inset:0; display:grid; place-items:center; font:700 16px var(--body); color:#a9b6ff; border:2px dashed #5b6dff; border-radius:inherit }
+
+.meta { display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin:14px 0 0; font-size:15px; color:#c9d2ff }
+.tag { font:700 13px var(--body); padding:4px 12px; border-radius:99px; background:#2f47ff; color:#fff }
+.tag.Active { background:var(--for); color:var(--ink) } .tag.Upcoming { background:#ffd66b; color:var(--ink) } .tag.Closed { background:#0f1fa8; color:#b7c3ff }
+.voted { font-weight:700; color:var(--for) }
+.back { background:none; border:0; color:#c9d2ff; font:600 15px var(--body); cursor:pointer; padding:0; margin-bottom:30px } .back:hover { color:#fff } .back::before { content:'\2190  ' }
+.detail-top { display:flex; align-items:center; gap:18px; margin-bottom:18px }
+.desc { max-width:60ch; font-size:19px; line-height:1.65; white-space:pre-wrap; margin:34px 0 0 }
+
+.vote { margin-top:44px }
+.btns { display:grid; grid-template-columns:repeat(3,1fr); gap:14px }
+.vb { border:0; border-radius:18px; padding:clamp(22px,4vw,40px) 10px; font:800 clamp(24px,3.4vw,40px) var(--display); letter-spacing:-.03em; cursor:pointer; color:var(--ink); transition:transform .12s }
+.vb.for { background:var(--for) } .vb.against { background:var(--against) } .vb.abstain { background:var(--abstain) }
+.vb:hover:not(:disabled) { transform:translateY(-4px) } .vb:disabled { opacity:.35; cursor:not-allowed }
+.done { font:700 24px var(--display); margin:0; color:var(--for) } .hint { margin:16px 0 0; color:#b7c3ff; font-size:15px }
+
+.empty { border:2px dashed #7f90ff; border-radius:22px; padding:48px 28px } .empty h2 { font:800 38px var(--display); letter-spacing:-.04em; margin:0 0 20px }
+.status-line { color:#b7c3ff; font-size:18px }
+.big-btn { background:#fff; color:var(--water); border:0; border-radius:99px; padding:16px 30px; font:800 18px var(--display); cursor:pointer } .big-btn:hover:not(:disabled) { background:var(--for); color:var(--ink) } .big-btn:disabled { opacity:.45; cursor:not-allowed }
+
+.form { max-width:720px }
+label { display:block; font:700 15px var(--body); margin-bottom:24px; color:#c9d2ff }
+input, textarea { display:block; width:100%; margin-top:8px; padding:16px 18px; border:2px solid #5b6dff; border-radius:14px; font:500 19px var(--body); background:var(--deep); color:#fff }
+input::placeholder, textarea::placeholder { color:#7f90ff }
+fieldset { border:0; padding:0; margin:0 0 32px } legend { font:700 15px var(--body); color:#c9d2ff; margin-bottom:10px; padding:0 }
+.durs { display:flex; flex-wrap:wrap; gap:10px } .durs button { background:none; border:2px solid #5b6dff; color:#fff; border-radius:99px; padding:10px 20px; font:700 16px var(--body); cursor:pointer } .durs button.on { background:#fff; color:var(--water); border-color:#fff }
+
+.note { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); max-width:min(580px,92vw); padding:14px 20px; border-radius:16px; background:#fff; color:var(--ink); font-weight:600; cursor:pointer; box-shadow:0 12px 40px rgba(5,10,80,.45); border-left:8px solid var(--for) }
+.note.err { border-left-color:var(--against) } .note a { color:var(--water); margin-left:8px; text-decoration:underline }
+
+@media (prefers-reduced-motion:reduce) { .flow { animation:none } .vb { transition:none } }
+@media (max-width:700px) {
+  header { flex-wrap:wrap; gap:10px } .mark { font-size:36px } nav { order:3; width:100%; margin:0 -6px } .counts strong { font-size:22px } .counts span { display:none } .big .counts span { display:block; font-size:12px } .big .counts strong { font-size:44px }
+  .ch-head { flex-direction:column; align-items:flex-start; gap:8px } .clock { text-align:left } .clock b { display:inline } .clock small { margin-left:6px }
+  .btns { grid-template-columns:1fr }
+}
