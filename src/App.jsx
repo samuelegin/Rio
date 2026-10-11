@@ -4,7 +4,7 @@ import { useAccount, useSwitchChain, useWriteContract } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { monad, GOV, govAbi } from './chain'
 
-const pc = createPublicClient({ chain: monad, transport: http(undefined, { batch: true }) })
+const pc = createPublicClient({ chain: monad, transport: http(undefined, { batch: true, retryCount: 4, retryDelay: 1000 }) })
 const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`
 const read = (functionName, args = []) => pc.readContract({ address: GOV, abi: govAbi, functionName, args })
 const reason = (e) => (e?.shortMessage || e?.message || 'Something went wrong').split('reason:').pop().trim().split('\n')[0]
@@ -67,10 +67,10 @@ export default function App() {
   const [form, setForm] = useState({ title: '', desc: '', dur: 86400 })
 
   const refresh = useCallback(async () => {
-    try { setProps(await load(acct)) } catch (e) { setNote({ kind: 'err', text: `Could not read Monad Testnet: ${reason(e)}` }) }
+    try { setProps(await load(acct)) } catch { /* transient RPC error, the next poll retries */ }
   }, [acct])
 
-  useEffect(() => { refresh(); const t = setInterval(refresh, 8000); return () => clearInterval(t) }, [refresh])
+  useEffect(() => { refresh(); const t = setInterval(refresh, 15000); return () => clearInterval(t) }, [refresh])
   async function ensureChain() { if (chainId !== monad.id) await switchChainAsync({ chainId: monad.id }) }
   async function act(label, functionName, args, done) {
     setBusy(true); setNote(null)
